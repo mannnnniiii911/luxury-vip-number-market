@@ -2185,7 +2185,7 @@
     let wishlist = new Set();
     let currentFilter = {
       price: 'all',
-      sort: 'default'
+      sort: 'repeat-first'
     };
 
     // Format currency to Indian Rupees
@@ -2272,8 +2272,23 @@ function renderCatalog(append = false) {
           return matchesCategory && matchesSearch && matchesPrice;
         });
 
+        // Helper: max repeating digit count in a number string
+        function maxRepeatCount(raw) {
+          if (!raw) return 0;
+          const freq = {};
+          for (const ch of raw) { if (ch >= '0' && ch <= '9') freq[ch] = (freq[ch]||0)+1; }
+          return Math.max(0, ...Object.values(freq));
+        }
+
         // Sorting
-        if (currentFilter.sort === 'price-asc') {
+        if (currentFilter.sort === 'repeat-first' || currentFilter.sort === 'default') {
+          // Primary: price low→high; Secondary: max repeating digit high→low
+          currentFiltered.sort((a, b) => {
+            const priceDiff = (a.price||0) - (b.price||0);
+            if (priceDiff !== 0) return priceDiff;
+            return maxRepeatCount(b.rawNumber) - maxRepeatCount(a.rawNumber);
+          });
+        } else if (currentFilter.sort === 'price-asc') {
           currentFiltered.sort((a, b) => (a.price||0) - (b.price||0));
         } else if (currentFilter.sort === 'price-desc') {
           currentFiltered.sort((a, b) => (b.price||0) - (a.price||0));
@@ -2442,7 +2457,7 @@ function renderCatalog(append = false) {
       searchQuery = '';
       const input = document.getElementById('search-input');
       if (input) input.value = '';
-      currentFilter = { price: 'all', sort: 'default' };
+      currentFilter = { price: 'all', sort: 'repeat-first' };
       selectCategory('All');
       showToast('Filters reset to full inventory');
     }
