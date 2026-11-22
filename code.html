@@ -169,16 +169,6 @@
 </head>
 <body class="min-h-screen flex flex-col items-center bg-[#EDE9E1] transition-all duration-300">
 
-  <!-- View Switcher Tool Bar (visible on desktop) -->
-  <aside class="hidden sm:flex items-center gap-3 py-2 px-4 mt-3 mb-2 bg-[#FCFAF6] border border-[#E7DFCF] rounded-full shadow-sm text-xs text-[#5C5245] z-50">
-    <span class="font-medium">View:</span>
-    <button id="btn-view-mobile" onclick="setViewMode('mobile')" class="px-3 py-1 rounded-full hover:bg-[#EADDC2] text-[#4A4033] font-semibold transition text-xs">
-      📱 Mobile
-    </button>
-    <button id="btn-view-fluid" onclick="setViewMode('fluid')" class="px-3 py-1 rounded-full bg-[#B87910] text-white font-semibold transition text-xs shadow-xs">
-      🖥️ Desktop (4 cols)
-    </button>
-  </aside>
 
   <!-- Main Mobile App Shell -->
   <div id="app-shell" class="w-full max-w-[420px] min-h-screen bg-[#F6F3EC] flex flex-col relative shadow-2xl overflow-x-hidden pb-28 transition-all duration-300" data-mode="mobile">
