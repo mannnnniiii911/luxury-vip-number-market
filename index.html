@@ -110,9 +110,6 @@
         padding-left: 24px !important;
         padding-right: 24px !important;
       }
-      #app-shell.desktop-mode #status-bar-header {
-        display: none !important;
-      }
       #app-shell.desktop-mode [data-purpose="vip-card"] {
         padding: 14px !important;
       }
@@ -153,9 +150,6 @@
       #app-shell.desktop-mode section[data-purpose="how-it-works"] {
         padding-left: 24px !important;
         padding-right: 24px !important;
-      }
-      #app-shell.desktop-mode #status-bar-header {
-        display: none !important;
       }
       #app-shell.desktop-mode [data-purpose="vip-card"] {
         padding: 14px !important;
@@ -2652,7 +2646,6 @@ function renderCatalog(append = false) {
     function setViewMode(mode) {
       const shell = document.getElementById('app-shell');
       const bottomNav = document.getElementById('bottom-nav');
-      const statusBar = document.getElementById('status-bar-header');
       const btnMobile = document.getElementById('btn-view-mobile');
       const btnFluid = document.getElementById('btn-view-fluid');
       const grid = document.getElementById('numbers-grid');
