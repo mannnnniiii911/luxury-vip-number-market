@@ -210,7 +210,7 @@ export async function fetchCategories(): Promise<CategorySummary[]> {
   } catch {}
 
   const defaultCategories: CategorySummary[] = [
-    { name: 'All', count: 1157 },
+    { name: 'All', count: 1177 },
     { name: 'AB AB', count: 952 },
     { name: 'AA BB', count: 869 },
     { name: 'AB BA', count: 828 },

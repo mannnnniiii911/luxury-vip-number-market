@@ -48,7 +48,7 @@ export default function HomePage() {
   const [sortFilter, setSortFilter] = useState('default');
 
   const [items, setItems] = useState<VipNumber[]>(initialCatalogData as VipNumber[]);
-  const [totalCount, setTotalCount] = useState(1157);
+  const [totalCount, setTotalCount] = useState(1177);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const isFirstRender = useRef(true);
