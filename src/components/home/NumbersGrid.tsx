@@ -13,6 +13,7 @@ interface NumbersGridProps {
   onEnquire: (item: VipNumber) => void;
   onBuy: (item: VipNumber) => void;
   onReset: () => void;
+  loading?: boolean;
 }
 
 export const NumbersGrid: React.FC<NumbersGridProps> = ({
@@ -24,6 +25,7 @@ export const NumbersGrid: React.FC<NumbersGridProps> = ({
   onEnquire,
   onBuy,
   onReset,
+  loading = false,
 }) => {
   const headingText =
     category === 'All'
@@ -54,7 +56,30 @@ export const NumbersGrid: React.FC<NumbersGridProps> = ({
         </span>
       </div>
 
-      {items.length === 0 ? (
+      {/* Skeleton Loading State when items are being fetched */}
+      {loading && items.length === 0 ? (
+        <div id="numbers-grid-skeleton" className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={`skel-${i}`}
+              className="rounded-2xl p-3.5 bg-gradient-to-br from-[#FAF7F0] to-[#F1E8D7] border border-[#E8DFC9] animate-pulse flex flex-col justify-between h-[178px]"
+            >
+              <div className="flex justify-between items-start">
+                <div className="w-16 h-4 bg-[#E4D7C2] rounded-full" />
+                <div className="w-6 h-6 bg-[#E4D7C2] rounded-full" />
+              </div>
+              <div className="space-y-2 my-auto">
+                <div className="w-28 h-5 bg-[#DFD0BA] rounded-md" />
+                <div className="w-16 h-3 bg-[#E9DCB6] rounded" />
+              </div>
+              <div className="pt-2 border-t border-[#E8DFC9] flex justify-between items-center gap-2">
+                <div className="w-14 h-4 bg-[#E4D7C2] rounded" />
+                <div className="w-16 h-6 bg-[#B87910]/25 rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : items.length === 0 ? (
         <div id="empty-state" className="text-center py-12 px-4 bg-[#FCFAF6] rounded-2xl border border-[#EADBBD]">
           <span className="text-3xl block mb-2">🔍</span>
           <h4 className="font-luxury-title text-base font-bold text-[#2A231C]">No Matching VIP Numbers</h4>
@@ -69,7 +94,12 @@ export const NumbersGrid: React.FC<NumbersGridProps> = ({
           </button>
         </div>
       ) : (
-        <div id="numbers-grid" className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        <div
+          id="numbers-grid"
+          className={`grid grid-cols-2 lg:grid-cols-4 gap-3.5 transition-opacity duration-200 ${
+            loading ? 'opacity-70' : 'opacity-100'
+          }`}
+        >
           {items.map((item) => (
             <VipCard
               key={item.id}

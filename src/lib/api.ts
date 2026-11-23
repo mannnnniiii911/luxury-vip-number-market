@@ -3,6 +3,12 @@ import { maxRepeatCount } from './utils';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
+// In-memory caches to eliminate repeated requests & provide 0ms instant responses
+const apiCache = new Map<string, PaginatedResult<VipNumber>>();
+let inMemoryInventory: VipNumber[] | null = null;
+let categoryCache: CategorySummary[] | null = null;
+let inventoryFetchPromise: Promise<VipNumber[]> | null = null;
+
 function matchesPatternCategory(item: VipNumber, cat: string): boolean {
   if (!cat || cat === 'All') return true;
   if (item.categories && item.categories.includes(cat)) return true;
@@ -39,6 +45,30 @@ function matchesPatternCategory(item: VipNumber, cat: string): boolean {
   return false;
 }
 
+/**
+ * Pre-warm the local inventory in memory in the background
+ */
+export async function prefetchInventory(): Promise<VipNumber[]> {
+  if (inMemoryInventory) return inMemoryInventory;
+  if (inventoryFetchPromise) return inventoryFetchPromise;
+
+  inventoryFetchPromise = (async () => {
+    try {
+      const res = await fetch('/data/numbers.json', { cache: 'force-cache' });
+      if (res.ok) {
+        const data: VipNumber[] = await res.json();
+        inMemoryInventory = data;
+        return data;
+      }
+    } catch (e) {
+      console.warn('Background inventory prefetch notice:', e);
+    }
+    return [];
+  })();
+
+  return inventoryFetchPromise;
+}
+
 export async function fetchNumbers(params: {
   category?: string;
   search?: string;
@@ -55,20 +85,44 @@ export async function fetchNumbers(params: {
   query.set('page', String(params.page || 1));
   query.set('limit', String(params.limit || 30));
 
-  try {
-    const res = await fetch(`${API_BASE}/numbers?${query.toString()}`, { cache: 'no-store' });
-    if (res.ok) {
-      return await res.json();
-    }
-  } catch {
-    // Backend API offline or starting, fall back to local evaluation
+  const cacheKey = query.toString();
+  if (apiCache.has(cacheKey)) {
+    return apiCache.get(cacheKey)!;
   }
 
-  // Client-side fallback
+  // Fast fetch with 2500ms abort controller to prevent any 60-second hang
   try {
-    const fallbackRes = await fetch('/data/numbers.json');
-    if (!fallbackRes.ok) throw new Error('Cannot load local fallback');
-    const all: VipNumber[] = await fallbackRes.json();
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 2500) : null;
+
+    const res = await fetch(`${API_BASE}/numbers?${cacheKey}`, {
+      signal: controller ? controller.signal : undefined,
+    });
+
+    if (timeoutId) clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const json: PaginatedResult<VipNumber> = await res.json();
+      apiCache.set(cacheKey, json);
+      return json;
+    }
+  } catch {
+    // API aborted or offline; fall back to lightning-fast local memory evaluation
+  }
+
+  // Client-side instant evaluation fallback
+  try {
+    let all: VipNumber[] = inMemoryInventory || [];
+    if (all.length === 0) {
+      all = await prefetchInventory();
+    }
+    if (all.length === 0) {
+      const fallbackRes = await fetch('/data/numbers.json');
+      if (!fallbackRes.ok) throw new Error('Cannot load local fallback');
+      all = await fallbackRes.json();
+      inMemoryInventory = all;
+    }
+
     const q = (params.search || '').trim().toLowerCase();
     const cat = params.category || 'All';
 
@@ -114,7 +168,7 @@ export async function fetchNumbers(params: {
     const paginatedData = filtered.slice(startIndex, startIndex + limit);
     const hasMore = Math.max(0, total - page * limit);
 
-    return {
+    const result: PaginatedResult<VipNumber> = {
       data: paginatedData,
       meta: {
         total,
@@ -124,6 +178,9 @@ export async function fetchNumbers(params: {
         hasMore,
       },
     };
+
+    apiCache.set(cacheKey, result);
+    return result;
   } catch (err) {
     console.error('Fallback error:', err);
     return {
@@ -134,40 +191,60 @@ export async function fetchNumbers(params: {
 }
 
 export async function fetchCategories(): Promise<CategorySummary[]> {
+  if (categoryCache) return categoryCache;
+
   try {
-    const res = await fetch(`${API_BASE}/categories`, { cache: 'no-store' });
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 2000) : null;
+
+    const res = await fetch(`${API_BASE}/categories`, {
+      signal: controller ? controller.signal : undefined,
+    });
+    if (timeoutId) clearTimeout(timeoutId);
+
     if (res.ok) {
-      return await res.json();
+      const data: CategorySummary[] = await res.json();
+      categoryCache = data;
+      return data;
     }
   } catch {}
 
-  return [
-    { name: 'All', count: 1098 },
-    { name: 'AB AB', count: 923 },
-    { name: 'AA BB', count: 840 },
-    { name: 'AB BA', count: 799 },
-    { name: 'AABB', count: 804 },
-    { name: 'ABAB', count: 829 },
-    { name: 'AAA', count: 846 },
-    { name: 'AAAAA', count: 727 },
+  const defaultCategories: CategorySummary[] = [
+    { name: 'All', count: 1127 },
+    { name: 'AB AB', count: 952 },
+    { name: 'AA BB', count: 869 },
+    { name: 'AB BA', count: 828 },
+    { name: 'AABB', count: 833 },
+    { name: 'ABAB', count: 858 },
+    { name: 'AAA', count: 875 },
+    { name: 'AAAAA', count: 756 },
     { name: '786 Series', count: 20 },
-    { name: 'VIP Numbers', count: 639 },
-    { name: 'Repeating Numbers', count: 1062 },
-    { name: 'Fancy Numbers', count: 1061 },
+    { name: 'VIP Numbers', count: 668 },
+    { name: 'Repeating Numbers', count: 1091 },
+    { name: 'Fancy Numbers', count: 1090 },
   ];
+  categoryCache = defaultCategories;
+  return defaultCategories;
 }
 
 export async function matchNumerology(birthDay: number, targetSum: string): Promise<NumerologyResult> {
+  const cacheKey = `num_${birthDay}_${targetSum}`;
   try {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 2000) : null;
+
     const res = await fetch(`${API_BASE}/numerology/match`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ birthDay, targetSum }),
+      signal: controller ? controller.signal : undefined,
     });
+    if (timeoutId) clearTimeout(timeoutId);
+
     if (res.ok) {
       return await res.json();
     }
   } catch {}
 
-  return { matchingCount: 1098, items: [] };
+  return { matchingCount: 1127, items: [] };
 }

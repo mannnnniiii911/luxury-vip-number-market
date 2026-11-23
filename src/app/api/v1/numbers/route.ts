@@ -98,14 +98,21 @@ export async function GET(req: NextRequest) {
   const paginatedData = filtered.slice(startIndex, startIndex + limit);
   const hasMore = Math.max(0, total - page * limit);
 
-  return NextResponse.json({
-    data: paginatedData,
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages,
-      hasMore,
+  return NextResponse.json(
+    {
+      data: paginatedData,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasMore,
+      },
     },
-  });
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      },
+    }
+  );
 }

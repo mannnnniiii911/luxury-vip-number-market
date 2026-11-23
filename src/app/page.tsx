@@ -29,8 +29,9 @@ import { FilterModal } from '@/components/modals/FilterModal';
 import { InfoModal } from '@/components/modals/InfoModal';
 
 // API
-import { fetchNumbers, matchNumerology } from '@/lib/api';
+import { fetchNumbers, matchNumerology, prefetchInventory } from '@/lib/api';
 import { openConciergeWhatsApp, openBuyNowWhatsApp, openEnquireWhatsApp } from '@/lib/whatsapp';
+import initialCatalogData from '@/data/initial-catalog.json';
 
 const PAGE_SIZE = 30;
 
@@ -46,10 +47,11 @@ export default function HomePage() {
   const [priceFilter, setPriceFilter] = useState('all');
   const [sortFilter, setSortFilter] = useState('default');
 
-  const [items, setItems] = useState<VipNumber[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
+  const [items, setItems] = useState<VipNumber[]>(initialCatalogData as VipNumber[]);
+  const [totalCount, setTotalCount] = useState(1127);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const isFirstRender = useRef(true);
 
   // Wishlist
   const [wishlist, setWishlist] = useState<Set<number>>(new Set());
@@ -108,6 +110,13 @@ export default function HomePage() {
 
   // ── Initial load & filter changes ─────────────────────────────────
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      prefetchInventory();
+      if (selectedCategory === 'All' && !searchQuery && priceFilter === 'all' && sortFilter === 'default') {
+        return;
+      }
+    }
     setPage(1);
     loadNumbers(1, false);
   }, [selectedCategory, searchQuery, priceFilter, sortFilter]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -321,6 +330,7 @@ export default function HomePage() {
             onEnquire={handleEnquire}
             onBuy={handleBuyNow}
             onReset={handleReset}
+            loading={loading}
           />
 
           {/* Load More */}
