@@ -35,7 +35,7 @@ export const EnquireModal: React.FC<EnquireModalProps> = ({
       onSubmitSuccess(`Enquiry sent for ${item.number}!`);
     }
     // Direct WhatsApp redirection
-    openEnquireWhatsApp(item.title, item.number);
+    openEnquireWhatsApp(item.number, item.badge || item.title, item.price);
     onClose();
   };
 

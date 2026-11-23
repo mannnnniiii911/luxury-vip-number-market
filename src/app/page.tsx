@@ -30,7 +30,7 @@ import { InfoModal } from '@/components/modals/InfoModal';
 
 // API
 import { fetchNumbers, matchNumerology } from '@/lib/api';
-import { openConciergeWhatsApp, openBuyNowWhatsApp } from '@/lib/whatsapp';
+import { openConciergeWhatsApp, openBuyNowWhatsApp, openEnquireWhatsApp } from '@/lib/whatsapp';
 
 const PAGE_SIZE = 30;
 
@@ -226,6 +226,15 @@ export default function HomePage() {
     [showToast]
   );
 
+  // ── Direct Enquire via WhatsApp ──────────────────────────────────
+  const handleEnquire = useCallback(
+    (item: VipNumber) => {
+      showToast(`Opening WhatsApp enquiry for ${item.number}...`);
+      openEnquireWhatsApp(item.number, item.badge || item.title, item.price);
+    },
+    [showToast]
+  );
+
   // ── Buy success (from modal if needed) ───────────────────────────
   const handleBuySuccess = useCallback(
     (item: VipNumber, carrier: string) => {
@@ -309,7 +318,7 @@ export default function HomePage() {
             category={selectedCategory}
             wishlist={wishlist}
             onToggleWishlist={handleToggleWishlist}
-            onEnquire={setEnquireItem}
+            onEnquire={handleEnquire}
             onBuy={handleBuyNow}
             onReset={handleReset}
           />
