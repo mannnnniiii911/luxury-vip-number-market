@@ -1,0 +1,22 @@
+{
+  "name": "luxury-vip-number-market",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:backend": "npm --workspace=apps/backend run start:dev",
+    "dev:frontend": "npm --workspace=apps/frontend run dev",
+    "build:shared": "npm --workspace=packages/shared-types run build",
+    "build:backend": "npm --workspace=apps/backend run build",
+    "build:frontend": "npm --workspace=apps/frontend run build",
+    "build": "npm run build:shared && npm --workspace=apps/frontend run build && cp -r apps/frontend/.next ./.next && cp -r apps/frontend/public ./public",
+    "dev": "npm run dev:frontend",
+    "start": "npm --workspace=apps/frontend run start"
+  },
+  "dependencies": {
+    "next": "14.2.20"
+  }
+}

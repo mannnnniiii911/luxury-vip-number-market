@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #EDE9E1;
+    color: #1D1812;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+.font-luxury-title {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-cinzel {
+  font-family: var(--font-cinzel), serif;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.glass-nav {
+  background: rgba(254, 252, 248, 0.95);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.gold-gradient-subtle {
+  background: linear-gradient(135deg, #FCF8EE 0%, #F5ECDA 100%);
+}
+
+.gold-card-bg {
+  background: linear-gradient(145deg, #FFFDF9 0%, #F8F2E4 100%);
+}
+
+.modal-backdrop {
+  background: rgba(29, 24, 18, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+/* Desktop Responsive Layout overrides */
+@media (min-width: 1024px) {
+  #app-shell.desktop-mode {
+    max-width: 1280px !important;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.10) !important;
+    border-radius: 1.25rem;
+    margin: 1rem auto;
+  }
+  #app-shell.desktop-mode #numbers-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+  #app-shell.desktop-mode .filter-pill {
+    font-size: 12px !important;
+    padding: 8px 14px !important;
+  }
+  #app-shell.desktop-mode #bottom-nav {
+    max-width: 1280px !important;
+  }
+  #app-shell.desktop-mode main {
+    padding: 16px 24px !important;
+  }
+  #app-shell.desktop-mode nav[data-purpose="category-navigation"] {
+    padding: 8px 24px !important;
+  }
+  #app-shell.desktop-mode section[data-purpose="hero-banner"],
+  #app-shell.desktop-mode section[data-purpose="numerology-finder"],
+  #app-shell.desktop-mode section[data-purpose="trending-collections"],
+  #app-shell.desktop-mode section[data-purpose="how-it-works"] {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  #app-shell.desktop-mode [data-purpose="vip-card"] {
+    padding: 14px !important;
+  }
+  #app-shell.desktop-mode #load-more-btn button {
+    font-size: 13px !important;
+    padding: 10px 24px !important;
+  }
+}
