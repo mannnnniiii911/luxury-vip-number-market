@@ -24,7 +24,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'Luxury VIP Number Market - Exclusive Mobile Numbers',
+  title: 'VIP Number Shop - Exclusive Mobile Numbers',
   description: "India's premier marketplace for rare, auspicious & royal VIP mobile numbers. Instant transfer with 100% legal ownership.",
 };
 

@@ -29,13 +29,16 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({
         <div>
           <div className="flex items-center justify-between pb-4 border-b border-[#E8DFC9]">
             <div className="flex items-center gap-2">
-              <div className="text-[#C49226]">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M5 16L3 5L8.5 10L12 4L15.5 10L21 5L19 16H5M19 19C19 19.6 18.6 20 18 20H6C5.4 20 5 19.6 5 19V17H19V19Z" />
-                </svg>
-              </div>
+              <svg className="w-7 h-7 flex-shrink-0" viewBox="0 0 48 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="4,2 18,2 22,14 8,14" fill="#C49226"/>
+                <polygon points="30,2 44,2 40,14 26,14" fill="#D4A82A"/>
+                <polygon points="20,2 28,2 26,10 22,10" fill="#B87910"/>
+                <polygon points="8,16 22,16 20,30 10,42" fill="#C49226"/>
+                <polygon points="26,16 40,16 38,42 28,30" fill="#D4A82A"/>
+                <polygon points="20,30 28,30 24,46" fill="#E8C040"/>
+              </svg>
               <span className="font-luxury-title font-bold text-base text-[#251E16]">
-                Luxury VIP Menu
+                VIP Number Shop
               </span>
             </div>
             <button
