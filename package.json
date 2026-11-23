@@ -2,21 +2,30 @@
   "name": "luxury-vip-number-market",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "scripts": {
-    "dev:backend": "npm --workspace=apps/backend run start:dev",
-    "dev:frontend": "npm --workspace=apps/frontend run dev",
-    "build:shared": "npm --workspace=packages/shared-types run build",
-    "build:backend": "npm --workspace=apps/backend run build",
-    "build:frontend": "npm --workspace=apps/frontend run build",
-    "build": "npm run build:shared && npm --workspace=apps/frontend run build && cp -r apps/frontend/.next ./.next && cp -r apps/frontend/public ./public",
-    "dev": "npm run dev:frontend",
-    "start": "npm --workspace=apps/frontend run start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "backend:dev": "npm --prefix backend run start:dev",
+    "backend:build": "npm --prefix backend run build"
   },
   "dependencies": {
-    "next": "14.2.20"
+    "clsx": "^2.1.1",
+    "next": "14.2.20",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.5.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.9",
+    "@types/node": "^22.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3"
   }
 }
